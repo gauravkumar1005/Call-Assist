@@ -39,11 +39,7 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const url = error.config?.url;
 
-    /*
-      ❗ IMPORTANT RULE
-      - /login ke 401 par redirect NAHI karna
-      - Sirf protected APIs ke 401 par redirect
-    */
+      // Auto logout on 401 Unauthorized
     if (status === 401 && url !== "/login") {
       localStorage.removeItem("token");
       localStorage.removeItem("username");
