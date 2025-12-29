@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import Navbar from "../components/Navbar";
+import { toastSuccess, toastError } from "../utils/toast";
 
 export default function Agents() {
   const [agents, setAgents] = useState([]);
@@ -13,10 +14,17 @@ export default function Agents() {
 
   const fetchAgents = async () => {
     try {
-      const res = await api.get("/agents");
+      const accountId = localStorage.getItem("accountId");
+
+      const res = await api.get("/agents", {
+        headers: {
+          "X-Account-Id": accountId,
+        },
+      });
+
       setAgents(res.data);
     } catch (err) {
-      alert("Failed to load agents");
+      toastError("Failed to load agents");
     }
   };
 
@@ -25,9 +33,11 @@ export default function Agents() {
 
     try {
       await api.delete(`/agents/${agentId}`);
+
+      toastSuccess("Agent deleted successfully 🗑️");
       fetchAgents();
     } catch (err) {
-      alert("Failed to delete agent");
+      toastError("Failed to delete agent");
     }
   };
 
@@ -97,16 +107,20 @@ export default function Agents() {
                     <div className="flex justify-center gap-3">
                       <button
                         onClick={() =>
-                          navigate(`/voice-assistant`)
+                          navigate(`/agents/${agent._id}/interactions`)
                         }
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm"
+                      >
+                        Interactions
+                      </button>
+                      <button
+                        onClick={() => navigate(`/voice-assistant`)}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded text-sm"
                       >
                         Connect
                       </button>
                       <button
-                        onClick={() =>
-                          navigate(`/agents/edit/${agent._id}`)
-                        }
+                        onClick={() => navigate(`/agents/edit/${agent._id}`)}
                         className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded text-sm"
                       >
                         Edit
@@ -152,17 +166,13 @@ export default function Agents() {
 
               <div className="flex gap-2">
                 <button
-                  onClick={() =>
-                    navigate(`/voice-assistant`)
-                  }
+                  onClick={() => navigate(`/voice-assistant`)}
                   className="flex-1 bg-indigo-600 text-white py-2 rounded-md text-sm"
                 >
                   Connect
                 </button>
                 <button
-                  onClick={() =>
-                    navigate(`/agents/edit/${agent._id}`)
-                  }
+                  onClick={() => navigate(`/agents/edit/${agent._id}`)}
                   className="flex-1 bg-yellow-500 text-white py-2 rounded-md text-sm"
                 >
                   Edit

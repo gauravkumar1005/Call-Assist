@@ -1,4 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -11,25 +14,119 @@ import Billing from "./pages/Billing";
 import People from "./pages/People";
 import MyPhoneNumber from "./pages/MyPhoneNumber";
 import PurchasePhoneNumber from "./pages/PurchasePhoneNumber";
+import Interactions from "./pages/Interactions";
 
+
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
     <BrowserRouter>
+      {/* 🔔 Toast Notifications */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="light"
+      />
+
       <Routes>
+        {/* 🌐 Public Routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/agents" element={<Agents />} />
-        <Route path="/agents/create" element={<CreateAgent />} />
-        <Route path="/agents/edit/:id" element={<EditAgent />} />
-        <Route path="/voice-assistant" element={<VoiceAssistant />} />
-        <Route path="/billing" element={<Billing />} />
-        <Route path="/people" element={<People />} />
-        <Route path="/phone-numbers" element={<MyPhoneNumber />} />
-        <Route path="/phone-numbers/purchase" element={<PurchasePhoneNumber />} />
 
+        {/* 🔐 Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/agents"
+          element={
+            <PrivateRoute>
+              <Agents />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/agents/create"
+          element={
+            <PrivateRoute>
+              <CreateAgent />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/agents/edit/:id"
+          element={
+            <PrivateRoute>
+              <EditAgent />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/voice-assistant"
+          element={
+            <PrivateRoute>
+              <VoiceAssistant />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/billing"
+          element={
+            <PrivateRoute>
+              <Billing />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/people"
+          element={
+            <PrivateRoute>
+              <People />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/phone-numbers"
+          element={
+            <PrivateRoute>
+              <MyPhoneNumber />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/phone-numbers/purchase"
+          element={
+            <PrivateRoute>
+              <PurchasePhoneNumber />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/agents/:agentId/interactions"
+          element={
+            <PrivateRoute>
+              <Interactions />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

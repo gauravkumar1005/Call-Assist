@@ -1,18 +1,40 @@
 import { api } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { toastSuccess, toastError  } from "../utils/toast";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  // 🔐 Agar already logged-in hai to redirect
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const submit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    await api.post("/signup", {
-      username: e.target.username.value,
-      password: e.target.password.value,
-    });
+    try {
+      const res = await api.post("/signup", {
+        username: e.target.username.value,
+        password: e.target.password.value,
+      });
 
-    navigate("/login");
+      // 🔑 IMPORTANT: accountId save
+      localStorage.setItem("accountId", res.data.accountId);
+
+      toastSuccess("Account created successfully! Please login.");
+
+      navigate("/login");
+    } catch (err) {
+      toastError(err.response?.data?.detail || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,9 +83,10 @@ export default function Signup() {
         {/* Submit */}
         <button
           type="submit"
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-medium transition"
+          disabled={loading}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white py-3 rounded-lg font-medium transition"
         >
-          Sign Up
+          {loading ? "Creating account..." : "Sign Up"}
         </button>
 
         {/* Footer */}

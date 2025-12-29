@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../services/api";
 import Navbar from "../components/Navbar";
+import { toastError, toastSuccess } from "../utils/toast";
 
 export default function EditAgent() {
   const { id } = useParams();
@@ -42,10 +43,10 @@ export default function EditAgent() {
 
     try {
       await api.put(`/agents/${id}`, form);
-      alert("Agent updated successfully");
+      toastSuccess("Agent updated successfully");
       navigate("/agents");
     } catch (err) {
-      alert("Failed to update agent");
+      toastError("Failed to update agent");
     }
   };
 

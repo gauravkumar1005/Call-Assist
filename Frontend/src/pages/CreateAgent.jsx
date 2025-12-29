@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import Navbar from "../components/Navbar";
+import { toastSuccess, toastError} from "../utils/toast";
 
 export default function CreateAgent() {
   const navigate = useNavigate();
@@ -23,10 +24,10 @@ export default function CreateAgent() {
     e.preventDefault();
     try {
       await api.post("/agents", form);
-      alert("Agent created successfully");
+      toastSuccess("Agent created successfully");
       navigate("/agents");
     } catch (err) {
-      alert("Failed to create agent");
+      toastError("Failed to create agent");
     }
   };
 

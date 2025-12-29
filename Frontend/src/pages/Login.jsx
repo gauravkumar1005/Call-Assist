@@ -1,5 +1,6 @@
-import { api } from "../services/api";
+import { loginApi } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { toastSuccess, toastError  } from "../utils/toast";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -7,15 +8,23 @@ export default function Login() {
   const submit = async (e) => {
     e.preventDefault();
 
-    const res = await api.post("/login", {
-      username: e.target.username.value,
-      password: e.target.password.value,
-    });
+    try {
+      const username = e.target.username.value;
+      const password = e.target.password.value;
 
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("username", res.data.username);
+      const res = await loginApi(username, password);
 
-    navigate("/dashboard");
+      // 🔑 backend response ke according
+      localStorage.setItem("token", res.data.access_token);
+      localStorage.setItem("username", username);
+      localStorage.setItem("accountId", res.data.accountId);
+      
+      toastSuccess("Login successful ✅");
+
+      navigate("/dashboard");
+    } catch (err) {
+      toastError("Invalid username or password");
+    }
   };
 
   return (
@@ -24,7 +33,6 @@ export default function Login() {
         onSubmit={submit}
         className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8"
       >
-        {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">
             Welcome Back
@@ -34,20 +42,17 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Username */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Username
           </label>
           <input
             name="username"
-            placeholder="Enter your username"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
             required
           />
         </div>
 
-        {/* Password */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Password
@@ -55,21 +60,18 @@ export default function Login() {
           <input
             name="password"
             type="password"
-            placeholder="Enter your password"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
             required
           />
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
-          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition"
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium"
         >
           Login
         </button>
 
-        {/* Footer */}
         <p className="text-sm text-center text-gray-500 mt-6">
           Don’t have an account?{" "}
           <button
